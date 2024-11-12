@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liver Diagnosis</title>
+</head>
+<body>
+    <h1>Liver Diagnosis Result</h1>
+
+    <!-- Display prediction if it exists -->
+    {% if prediction %}
+        <p>Prediction: {{ prediction }}</p>
+    {% else %}
+        <p>No prediction available.</p>
+    {% endif %}
+
+    <h2>Liver Disease Prediction Form</h2>
+    <form id="liverDiseaseForm">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required><br><br>
+
+        <label for="sex">Sex:</label>
+        <select id="sex" name="sex" required>
+            <option value="0">Female</option>
+            <option value="1">Male</option>
+        </select><br><br>
+
+        <label for="totalBilirubin">Total Bilirubin:</label>
+        <input type="number" id="totalBilirubin" name="totalBilirubin" step="0.1" required><br><br>
+
+        <label for="directBilirubin">Direct Bilirubin:</label>
+        <input type="number" id="directBilirubin" name="directBilirubin" step="0.1" required><br><br>
+
+        <label for="alkalinePhosphatase">Alkaline Phosphatase:</label>
+        <input type="number" id="alkalinePhosphatase" name="alkalinePhosphatase" required><br><br>
+
+        <label for="alamineAminotransferase">Alamine Aminotransferase:</label>
+        <input type="number" id="alamineAminotransferase" name="alamineAminotransferase" required><br><br>
+
+        <label for="aspartateAminotransferase">Aspartate Aminotransferase:</label>
+        <input type="number" id="aspartateAminotransferase" name="aspartateAminotransferase" required><br><br>
+
+        <label for="totalProteins">Total Proteins:</label>
+        <input type="number" id="totalProteins" name="totalProteins" step="0.1" required><br><br>
+
+        <label for="albumin">Albumin:</label>
+        <input type="number" id="albumin" name="albumin" step="0.1" required><br><br>
+
+        <label for="albuminGlobulinRatio">Albumin and Globulin Ratio:</label>
+        <input type="number" id="albuminGlobulinRatio" name="albuminGlobulinRatio" step="0.1" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h3>Prediction Result</h3>
+    <div id="predictionResult">
+        <!-- The prediction result will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById("liverDiseaseForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Gather form data
+            const formData = new FormData(this);
+
+            // Send form data to the backend for prediction
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the prediction result div based on response
+                const resultDiv = document.getElementById("predictionResult");
+                if (data.prediction) {
+                    resultDiv.innerHTML = `<strong>Prediction:</strong> ${data.prediction}`;
+                } else if (data.error) {
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
